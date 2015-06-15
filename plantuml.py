@@ -124,7 +124,7 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
         # make a name
         name = tf.name+imgext
         # build cmd line
-        cmdline = ['plantuml', '-o', path, tf.name]
+        cmdline = ['plantuml', tf.name]
 
         try:
             p = Popen(cmdline, stdout=PIPE, stderr=PIPE)
