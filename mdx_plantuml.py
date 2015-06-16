@@ -15,10 +15,9 @@ logger = logging.getLogger('MARKDOWN')
 # For details see https://pythonhosted.org/Markdown/extensions/api.html#blockparser
 class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
     # Regular expression inspired by the codehilite Markdown plugin
-    RE = re.compile(r'::plantuml::', re.VERBOSE)
+    RE = re.compile(r'{%\splantuml\s%}', re.VERBOSE)
     # Regular expression for identify end of UML script
-    RE_END = re.compile(r'::endplantuml::\s*$')
-    IMAGES_DIR = 'images/'
+    RE_END = re.compile(r'{%\sendplantuml\s%}\s*$')
 
     def test(self, parent, block):
         return self.RE.search(block)
@@ -52,15 +51,16 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
         etree.SubElement(parent, "img", src=imageurl)
 
     def generate_uml_image(self, abs_target_dir, plantuml_code):
+        print "Generating image"
+        
         plantuml_code = plantuml_code.encode('utf8')
         tf = tempfile.NamedTemporaryFile(delete=False)
         tf.write('@startuml\n'.encode('utf8'))
         tf.write(plantuml_code)
         tf.write('\n@enduml'.encode('utf8'))
         tf.flush()
-        print "uml_code" + plantuml_code
+        #print "uml_code" + plantuml_code
         #print "tfname " + tf.name
-
         imgext = '.png'
 
         pl = plantuml.PlantUML()
