@@ -41,13 +41,13 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
         # Remove block header and footer
         text = re.sub(self.RE, "", re.sub(self.RE_END, "", text))
 
-        abs_target_dir = os.path.abspath(self.config['outpath'] + self.IMAGES_DIR)
-        print "abs_target_dir " + abs_target_dir
+        abs_target_dir = os.path.abspath(os.path.join(self.config['target'], self.config['image_folder']))
+        #print "abs_target_dir " + abs_target_dir
         if not os.path.exists(abs_target_dir):
             os.makedirs(abs_target_dir)
 
         # Generate image from PlantUML script
-        imageurl = self.config['siteurl']+self.generate_uml_image(abs_target_dir, text)
+        imageurl = self.config['siteurl'] + os.path.join(self.config['image_folder'], self.generate_uml_image(abs_target_dir, text))
         # Create image tag and append to the document
         etree.SubElement(parent, "img", src=imageurl)
 
@@ -59,7 +59,7 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
         tf.write('\n@enduml'.encode('utf8'))
         tf.flush()
         print "uml_code" + plantuml_code
-        print "tfname " + tf.name
+        #print "tfname " + tf.name
 
         imgext = '.png'
 
@@ -72,7 +72,7 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
 
         if pl.processes_file(tf.name, newname):
             os.remove(tf.name)
-            return self.IMAGES_DIR + os.path.basename(newname)
+            return os.path.basename(newname)
         else:
             # the temporary file is still available as aid understanding errors
             raise RuntimeError('Error in "uml" directive')
@@ -83,7 +83,8 @@ class PlantUMLMarkdownExtension(markdown.Extension):
     # For details see https://pythonhosted.org/Markdown/extensions/api.html#configsettings
     def __init__(self, *args, **kwargs):
         self.config = {
-            'outpath': ["images", "Directory where to put generated images. Defaults to 'images'."],
+            'image_folder': ["images", "Directory where to put generated images. Defaults to 'images'."],
+            'target': ["", "Directory where to put the image_folder. Defaults to empty string."],
             'siteurl': ["", "URL of document, used as a prefix for the image diagram. Defaults to empty string."]
         }
 
