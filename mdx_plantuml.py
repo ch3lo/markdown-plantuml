@@ -63,7 +63,7 @@ class PlantUMLBlockProcessor(markdown.blockprocessors.BlockProcessor):
 
         imgext = '.png'
 
-        pl = puml.PlantUML()
+        pl = plantuml.PlantUML()
 
         newname = os.path.join(abs_target_dir, "%08x" % (adler32(plantuml_code) & 0xffffffff))+imgext
 
